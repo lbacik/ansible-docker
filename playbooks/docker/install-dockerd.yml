@@ -1,0 +1,33 @@
+- name: Install Docker
+  hosts: docker
+  become: true
+  tasks:
+    - name: install docker apt source list dependencies
+      apt: 
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg2
+          - software-properties-common
+        state: present
+        update_cache: yes
+    - name: get docker repo key
+      command: curl -fsSL https://download.docker.com/linux/debian/gpg -o /tmp/apt-key
+    - name: add docker repo key to apt-keys
+      command: apt-key add /tmp/apt-key
+    - name: release
+      command: lsb_release -cs
+      register: release
+    - name: add docker repository
+      command: >
+        add-apt-repository
+        "deb https://download.docker.com/linux/debian {{ release.stdout }} stable"
+    - name: install docker
+      apt: 
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes

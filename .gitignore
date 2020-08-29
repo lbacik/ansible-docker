@@ -1,0 +1,3 @@
+hosts
+playbooks/docker/tls/*.pem
+playbooks/docker/tls/*.key

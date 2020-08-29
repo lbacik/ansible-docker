@@ -1,0 +1,21 @@
+- name: Configure docker with systemd
+  hosts: dev
+  become: true
+  vars:
+    sysd_dir: /lib/systemd/system/
+    sysd_dockerd_dir: /etc/systemd/system/docker.service.d/
+  tasks:
+    - name: create systemd dockerd directory
+      command: mkdir "{{ sysd_dockerd_dir }}"
+      args:
+        creates: "{{ sysd_dockerd_dir }}"
+    - name: dockerd
+      template:
+        src: configure-systemd/dockerd.conf.j2
+        dest: "{{ sysd_dockerd_dir }}/dockerd.conf"
+    - name: reload systemd
+      command: systemctl daemon-reload
+    - name: enabling dockerd
+      service: name=docker enabled=yes
+    - name: starting dockerd
+      service: name=docker state=restarted

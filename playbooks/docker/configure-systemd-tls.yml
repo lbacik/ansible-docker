@@ -1,0 +1,35 @@
+- name: Configure docker (tls) with systemd
+  hosts: docker
+  become: true
+  vars:
+    sysd_dir: /lib/systemd/system/
+    sysd_dockerd_dir: /etc/systemd/system/docker.service.d/
+    cert_ca: myCA.pem
+    cert: docker.pem
+    cert_key: docker.key
+    cert_src: tls/
+    cert_dest: /usr/local/etc/docker-ssl/ 
+  tasks:
+    - name: copy cert
+      copy:
+        src: "{{ cert_src }}{{ item }}"
+        dest: "{{ cert_dest }}"
+      with_items:
+        - "{{ cert_ca }}"
+        - "{{ cert }}"
+        - "{{ cert_key }}"
+    - name: create systemd dockerd directory
+      command: mkdir "{{ sysd_dockerd_dir }}"
+      args:
+        creates: "{{ sysd_dockerd_dir }}"
+    - name: dockerd
+      template:
+        src: configure-systemd/dockerd-tls.conf.j2
+        dest: "{{ sysd_dockerd_dir }}/dockerd.conf"
+    - name: reload systemd
+      command: systemctl daemon-reload
+    - name: enabling dockerd
+      service: name=docker enabled=yes
+    - name: starting dockerd
+      service: name=docker state=restarted
+      
