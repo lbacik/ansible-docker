@@ -3,7 +3,7 @@
   become: true
   tasks:
     - name: install docker apt source list dependencies
-      apt: 
+      apt:
         pkg:
           - apt-transport-https
           - ca-certificates
@@ -21,10 +21,10 @@
       register: release
     - name: add docker repository
       command: >
-        add-apt-repository
+        add-apt-repository -y
         "deb https://download.docker.com/linux/ubuntu {{ release.stdout }} stable"
     - name: install docker
-      apt: 
+      apt:
         pkg:
           - docker-ce
           - docker-ce-cli
