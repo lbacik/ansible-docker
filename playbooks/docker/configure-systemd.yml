@@ -1,5 +1,5 @@
 - name: Configure docker with systemd
-  hosts: dev
+  hosts: docker
   become: true
   vars:
     sysd_dir: /lib/systemd/system/
