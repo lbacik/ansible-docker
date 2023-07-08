@@ -1,12 +1,9 @@
 # ansible-docker
 
-You have to prepare your own `hosts` file (see hosts_example for a hint what/how/where ;) ).
 
-## use case
+## ssh
 
-Typical use can be like below:
-
-copy your ssh key to the server:
+Ansible requires ssh to work, so if it still needs to be done, you have to configure ssh with the publickey authentication on the remote server.
 
 	$ ssh-copy-id user@server
 
@@ -14,17 +11,33 @@ User `user` have to be added to /etc/sudoers file (or be in sudo group)!
 
 	%sudo  ALL=(ALL:ALL) NOPASSWD: ALL
 
-Add host(s) to `hosts` file:
+## configuration
 
-	example ansible_host=server ansible_user=user
+Prepare your own `hosts`:
 
-And run playbooks you want to!
+```
+cp hosts_example hosts
+```
+
+
 
 ## playbooks
 
 To install docker on debian:
 
 	$ ansible-playbook playbooks/docker/install-dockerd.yml
+
+To add configured user to `docker` group (if required):
+
+```
+$ ansible-playbook playbooks/docker/user-mod.yml
+```
+
+
+
+### Remote docker via docker api
+
+Nowadays, the preferred way to access the remote docker instance is through the ssh protocol (at least to me); however, if, for some reason, you want to expose the docker api on the remote host, you can use the `configure-systemd` playbook for that.
 
 To configure docker api on port 2375 (systemd):
 
